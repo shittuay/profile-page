@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <header>
+        <h1>{{ profile.name }}</h1>
+        <p>{{ profile.bio }}</p>
+        <ul>
+            <li>Email: {{ profile.email }}</li>
+            <li><a href="{{ profile.linkedin }}">LinkedIn</a></li>
+            <li><a href="{{ profile.github }}">GitHub</a></li>
+        </ul>
+    </header>
+    
+    <section>
+        <h2>Accomplishments</h2>
+        <ul>
+            {% for accomplishment in accomplishments %}
+                <li>
+                    <h3>{{ accomplishment.title }}</h3>
+                    <p>{{ accomplishment.description }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <footer>
+        <a href="/blog">Visit my blog</a>
+    </footer>
+</body>
+</html>
