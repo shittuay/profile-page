@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
+        <img src="{{ url_for('static', filename=profile.picture) }}" alt="Profile Picture" style="width:150px;height:150px;border-radius:50%;">
         <h1>{{ profile.name }}</h1>
         <p>{{ profile.bio }}</p>
         <ul>
-            <li>Email: {{ profile.email }}</li>
+            <li>Email: <a href="{{ profile.email }}">{{ profile.email }}</a></li>
             <li><a href="{{ profile.linkedin }}">LinkedIn</a></li>
             <li><a href="{{ profile.github }}">GitHub</a></li>
+            <li><a href="{{ url_for('static', filename=profile.resume) }}" target="_blank">Resume</a></li>
         </ul>
     </header>
     
