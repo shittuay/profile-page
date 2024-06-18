@@ -16,7 +16,8 @@
             <li>Email: <a href="{{ profile.email }}">{{ profile.email }}</a></li>
             <li><a href="{{ profile.linkedin }}">LinkedIn</a></li>
             <li><a href="{{ profile.github }}">GitHub</a></li>
-            <li><a href="{{ url_for('static', filename=profile.resume) }}" target="_blank">Resume</a></li>
+            <li><a href="{{ url_for('static', filename='css/Docs/resume.docx') }}" target="_blank">Resume</a></li>
+            <li><a href="{{ url_for('static', filename='css/Docs/Profile.pdf') }}" target="_blank">Profile</a></li>
         </ul>
     </header>
     
