@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-page-deployment
+  namespace: profile-page
+spec:
+  selector:
+    matchLabels:
+      app: profile-page-deployment
+  template:
+    metadata:
+      labels:
+        app: profile-page-deployment
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: custom-label
+                    operator: In
+                    values:
+                      - k8s
+      containers:
+        - name: profile-page-deployment
+          image: shittuay/profile-page:dev-9233792230
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5000
