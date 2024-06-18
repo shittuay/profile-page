@@ -8,17 +8,18 @@ PROFILE = {
     'email': 'mailto:abiola.shiba@gmail.com',
     'linkedin': 'https://www.linkedin.com/in/abiola-shittu/',
     'github': 'https://github.com/shittuay',
-    'resume': 'resume.docx',  # Update this with the actual path to your resume
-    'picture': 'path/to/your/picture.jpg'
+    'resume': 'images/Docs/resume.docx',  # Update this with the actual path to your resume
+    'picture': 'images/Abiola.jpeg',
+    'profile': 'images/Docs/Profile.pdf'
 }
 
 ACCOMPLISHMENTS = [
     {'title': 'Project 1', 'description': 'Web-application project deployment on AWS Cloud using Terraform and Jenkins'},
     {'title': 'Project 2', 'description': 'Python-flask web application deployment on Kubernetes cluster using Helm and Kustomize'},
-    {'title': 'AWS Cloud Practitioner Certification', 'description': 'AWS Cloud Practitioner Certification'},
-    {'title': 'AWS Cloud Quest Certification', 'description': 'AWS Cloud Quest Certification'},
-    {'title': 'AWS DevOps Engineer Certification', 'description': 'AWS DevOps Engineer Certification'},
-    {'title': 'ITIL Foundation Certification', 'description': 'ITIL Foundation Certification'},
+    {'title': 'Award', 'description': 'AWS Cloud Practitioner Certification'},
+    {'title': 'Award', 'description': 'AWS Cloud Quest Certification'},
+    {'title': 'Award', 'description': 'AWS DevOps Engineer Certification'},
+    {'title': 'Award', 'description': 'ITIL Foundation Certification'},
     # Add more accomplishments as needed
 ]
 
