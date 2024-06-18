@@ -12,9 +12,10 @@ body {
 header {
     background-color: #4CAF50;
     color: white;
-    padding: 20px;
+    padding: 200px;
     width: 100%;
     text-align: center;
+
 }
 
 header h1 {
@@ -28,6 +29,7 @@ ul {
 
 ul li {
     margin: 10px 0;
+
 }
 
 a {
@@ -51,7 +53,7 @@ section {
 
 footer {
     text-align: center;
-    padding: 20px;
+    padding: 200px;
     background-color: #4CAF50;
     color: white;
     width: 100%;
