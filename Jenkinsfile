@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev'], [name: '*/qa'], [name: '*/prod']], userRemoteConfigs: [[url: 'https://github.com/shittuay/profile_page.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/shittuay/profile_page.git']]])
             }
         }
         stage('Sonarqube Analysis') {
