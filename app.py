@@ -15,7 +15,17 @@ PROFILE = {
 
 ACCOMPLISHMENTS = [
     {'title': 'Project 1', 'description': 'Web-application project deployment on AWS Cloud using Terraform and Jenkins'},
-    {'title': 'Project 2', 'description': 'Python-flask web application deployment on Kubernetes cluster using Helm and Kustomize'},
+    {'title': 'Project 2', 'description': 'Iam key rotation automation using AWS Lambda and CloudWatch Events'},
+    {'title': 'Project 3', 'description': 'Creating bulk EC2 instances using Terraform'},
+    {'title': 'Project 4', 'description': 'creating a VPC with public and private subnets using cloudformation '},
+    {'title': 'Project 5', 'description': 'used aws security hub to monitor security compliance of aws resources'},
+    {'title': 'Project 6', 'description': 'created mysql database on aws rds and connected to an ec2 instance using terraform'},
+    {'title': 'Project 7', 'description': 'work on several migration projects from on-premises to aws cloud using aws server migration service'},
+    {'title': 'Project 8', 'description': 'created control tower and landing zone using aws organizations and service catalog'},
+    {'title': 'Project 9', 'description': 'created auto scaling, target groups and load balancers using terraform and attaching a waf to the load balancer'},
+    {'title': 'Project 10', 'description': 'creating a blue-green deployment using Aws ecs and code commit, code deploy and code pipeline'},
+    {'title': 'Project 11', 'description': 'Python-flask web application deployment on Kubernetes cluster using Helm and Kustomize'},
+    {'title': 'Project 12', 'description': 'created a CI/CD pipeline using Jenkins, sonarqube, nexus and Github'},
     {'title': 'Award', 'description': 'AWS Cloud Practitioner Certification'},
     {'title': 'Award', 'description': 'AWS Cloud Quest Certification'},
     {'title': 'Award', 'description': 'AWS DevOps Engineer Certification'},
@@ -108,8 +118,91 @@ BLOG_POSTS = [
             <h3>Summary</h3>
             <p>Deploying a Flask app on Render is a user-friendly process, ideal for developers working on projects like a profile page website with Python, HTML, and CSS. Render takes care of the infrastructure, allowing you to focus on building your application without worrying about server management. The integration with GitHub makes it easy to update your app by simply pushing new commits to your repository.</p>
         '''
+    },
+    {
+        'title': 'Managing Single Sign-On with Temporary Access Keys and Automating Key Rotation with AWS Lambda',
+        'content': '''
+            <h3>Introduction</h3>
+            <p>In the world of cloud computing, securing access to resources is paramount. One common approach is using Single Sign-On (SSO) with temporary access keys. However, for workloads that cannot be terminated if the temporary keys expire, a different strategy is needed to avoid disruptions. In such cases, creating an IAM user with permanent access keys is a viable solution. As a DevOps engineer, it's crucial to implement an automation process to reissue these keys regularly to maintain security and compliance. This post will walk you through how to set up this automation using AWS Lambda, Secrets Manager, and EventBridge.</p>
+
+            <h3>Why Use Single Sign-On with Temporary Access Keys?</h3>
+            <p>SSO with temporary access keys is a widely used method for providing secure, time-limited access to AWS resources. It reduces the risk of long-term credentials being compromised since the keys are short-lived and automatically expire. However, some workloads require uninterrupted access and cannot afford the disruption caused by expiring keys.</p>
+
+            <h3>The Challenge of Expiring Keys</h3>
+            <p>For workloads that cannot tolerate interruptions, relying solely on temporary keys can be problematic. When these keys expire, the workload loses access until new keys are issued. To avoid this, we can create an IAM user with permanent access keys, ensuring continuous access. However, permanent keys come with their own risks if not managed properly.</p>
+
+            <h3>Solution: Automating Key Rotation</h3>
+            <p>To mitigate the risks associated with permanent keys, it is essential to rotate them regularly. AWS Lambda, combined with Secrets Manager and EventBridge, provides a powerful automation framework to achieve this.</p>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Create an IAM User with Permanent Access Keys</strong>
+                <p>First, create an IAM user and generate access keys for it. These keys will be used by the workload that requires uninterrupted access.</p>
+                </li>
+                <li><strong>Store the Keys in AWS Secrets Manager</strong>
+                <p>Store the generated access keys in AWS Secrets Manager to keep them secure and easily retrievable. Create a new secret and add the access key ID and secret access key.</p>
+                <pre><code>aws secretsmanager create-secret --name myAccessKeys --secret-string '{"AccessKeyId":"AKIA...", "SecretAccessKey":"wJal..."}'</code></pre>
+                </li>
+                <li><strong>Set Up AWS Lambda Function for Key Rotation</strong>
+                <p>Create an AWS Lambda function that will rotate the access keys every three months. The function will generate new keys, update the secret in Secrets Manager, and deactivate the old keys.</p>
+                <pre><code>import boto3
+import json
+from datetime import datetime
+
+iam_client = boto3.client('iam')
+secretsmanager_client = boto3.client('secretsmanager')
+
+def rotate_access_keys(event, context):
+    user_name = 'your-iam-user-name'
+    secret_name = 'myAccessKeys'
+    
+    # Create new access key
+    response = iam_client.create_access_key(UserName=user_name)
+    new_access_key = response['AccessKey']
+    
+    # Update the secret with new access keys
+    new_secret_string = json.dumps({
+        "AccessKeyId": new_access_key['AccessKeyId'],
+        "SecretAccessKey": new_access_key['SecretAccessKey']
+    })
+    secretsmanager_client.update_secret(SecretId=secret_name, SecretString=new_secret_string)
+    
+    # List all access keys and delete the oldest one if there are more than two
+    response = iam_client.list_access_keys(UserName=user_name)
+    access_keys = sorted(response['AccessKeyMetadata'], key=lambda x: x['CreateDate'])
+    if len(access_keys) > 2:
+        iam_client.delete_access_key(UserName=user_name, AccessKeyId=access_keys[0]['AccessKeyId'])
+    
+    print(f"Access keys rotated at {datetime.now()}")
+
+# Example event to test the function locally
+if __name__ == "__main__":
+    rotate_access_keys({}, {})</code></pre>
+                </li>
+                <li><strong>Deploy the Lambda Function</strong>
+                <p>Deploy the Lambda function and configure it to have the necessary IAM roles and permissions to manage IAM users and access keys, as well as Secrets Manager.</p>
+                </li>
+                <li><strong>Set Up EventBridge to Trigger Lambda Function</strong>
+                <p>Use EventBridge (formerly CloudWatch Events) to schedule the Lambda function to run every three months.</p>
+                <pre><code>aws events put-rule --schedule-expression "rate(90 days)" --name RotateAccessKeysRule
+aws events put-targets --rule RotateAccessKeysRule --targets "Id"="1","Arn"="arn:aws:lambda:region:account-id:function:function-name"</code></pre>
+                </li>
+            </ol>
+
+            <h3>Conclusion</h3>
+            <p>By automating the rotation of IAM user access keys using AWS Lambda, Secrets Manager, and EventBridge, you can ensure your workloads have continuous access to AWS resources without the risk of key expiration. This approach enhances security by regularly updating access keys and minimizes the potential for disruptions in your operations. Implementing this solution demonstrates the proactive measures a DevOps engineer can take to maintain a secure and resilient infrastructure.</p>
+
+            <h3>Further Reading</h3>
+            <ul>
+                <li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html">AWS IAM Best Practices</a></li>
+                <li><a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html">Using AWS Secrets Manager</a></li>
+                <li><a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda Documentation</a></li>
+                <li><a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/what-is-amazon-eventbridge.html">Amazon EventBridge Documentation</a></li>
+            </ul>
+
+            <p>Feel free to reach out if you have any questions or need further assistance with setting up this automation!</p>
+        '''
     }
-    # Add more blog posts as needed
 ]
 
 @app.route("/")
