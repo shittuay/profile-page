@@ -98,19 +98,11 @@ pipeline {
             steps {
                 script {
                     dir('./k8s') {
-                        withCredentials([file(credentialsId: 'shittuay-kubeconfig', variable: 'KUBECONFIG')]) {
-                            if (env.BRANCH_NAME == 'master') {
-                                sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/dev/kustomization.yaml"
-                                sh "kustomize build overlays/dev | kubectl apply -f -"
-                                slackSend channel: '#alerts', color: 'good', message: "profile_page with tag ${env.IMAGE_TAG} deployed to master"
-                            } else if (env.BRANCH_NAME == 'master') {
-                                sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/qa/kustomization.yaml"
-                                sh "kustomize build overlays/qa | kubectl apply -f -"
-                                slackSend channel: '#alerts', color: 'good', message: "profile_page with tag ${env.IMAGE_TAG} deployed to main"
-                            } else if (env.BRANCH_NAME == 'prod') {
-                                sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/prod/kustomization.yaml"
-                                sh "kustomize build overlays/prod | kubectl apply -f -"
-                                slackSend channel: '#alerts', color: 'good', message: "profile_page with tag ${env.IMAGE_TAG} deployed to prod"
+                        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: 'shittuay-kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f deployment.yaml'
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f service.yaml'
                             }
                         }
                     }
