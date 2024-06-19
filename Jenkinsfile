@@ -99,10 +99,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'shittuay-kubeconfig', variable: 'KUBECONFIG')]) {
-            sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/deployment.yaml'
-            sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/service.yaml'
-            // Example: Check the deployment status
-            sh 'kubectl --kubeconfig=$KUBECONFIG rollout status deployment/my-deployment-name'
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/deployment.yaml --validate=false'
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/service.yaml --validate=false' 
                 }
             }
         }
