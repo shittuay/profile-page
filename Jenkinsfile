@@ -55,7 +55,7 @@ pipeline {
         // }
         stage('OWASP') {
             steps {
-                dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${env.NVDAPIKEY}", odcInstallation: 'DP-Check'
+                dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVDAPIKEY}", odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -68,14 +68,16 @@ pipeline {
         }
         stage("Login to DockerHub") {
             steps {
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-                echo "Login Successful"
+                script {
+                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                    echo "Login Successful"
+                }
             }
         }
         stage("Docker Build") {
             steps {
                 script {
-                    sh "docker build -t $IMAGE_NAME ."
+                    sh "docker build -t ${IMAGE_NAME} ."
                     echo "Image built successfully"
                 }
             }
@@ -83,29 +85,22 @@ pipeline {
         stage("Trivy Image Scan") {
             steps {
                 script {
-                    sh "trivy image $IMAGE_NAME"
+                    sh "trivy image ${IMAGE_NAME}"
                 }
             }
         }
         stage("Docker Push") {
             steps {
                 script {
-                    sh "docker push $IMAGE_NAME"
+                    sh "docker push ${IMAGE_NAME}"
                 }
             }
         }
-        stage("Deploy") {
-            steps {
-                script {
-                    dir('./k8s') {
-                        stage('Deploy to Kubernetes') {
+        stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'shittuay-kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f deployment.yaml'
-                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f service.yaml'
-                            }
-                        }
-                    }
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/deployment.yaml'
+                    sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/service.yaml'
                 }
             }
         }
