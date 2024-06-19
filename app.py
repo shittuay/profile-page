@@ -26,6 +26,7 @@ ACCOMPLISHMENTS = [
     {'title': 'Project 10', 'description': 'creating a blue-green deployment using Aws ecs and code commit, code deploy and code pipeline'},
     {'title': 'Project 11', 'description': 'Python-flask web application deployment on Kubernetes cluster using Helm and Kustomize'},
     {'title': 'Project 12', 'description': 'created a CI/CD pipeline using Jenkins, sonarqube, nexus and Github'},
+    {'title': 'Project 13', 'description': 'created s3 bucket and enabled versioning and lifecycle policy using terraform'},
     {'title': 'Award', 'description': 'AWS Cloud Practitioner Certification'},
     {'title': 'Award', 'description': 'AWS Cloud Quest Certification'},
     {'title': 'Award', 'description': 'AWS DevOps Engineer Certification'},
