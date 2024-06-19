@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  # - path: deployment.yaml
+  #   target:
+  #     kind: Deployment
+  #     name: profile-page-deployment
+  - path: service.yaml
+    target:
+      kind: Service
+      name: profile-page-service
+
+namespace: webcompanion
+
+images:
+  - name: shittuay/profile_page
+    newTag: IMAGE_TAG
+
+namePrefix: master-
+labels:
+  - includeSelectors: true
+    pairs:
+      env: master
+      # message: DO_NOT_USE_IN_PRODUCTION

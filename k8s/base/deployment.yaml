@@ -23,7 +23,7 @@ spec:
                       - k8s
       containers:
         - name: profile-page-deployment
-          image: shittuay/profile-page:dev-9233792230
+          image: shittuay/profile_page:v.0.29
           resources:
             limits:
               memory: "128Mi"
