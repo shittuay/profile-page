@@ -98,7 +98,7 @@ pipeline {
             steps {
                 script {
                     dir('./k8s') {
-                        kubeconfig(credentialsId: 'kubeconfig.yaml (shittuay-kubeconfig)', https://192.168.1.119:6443l: '') {
+                        kubeconfig(credentialsId: 'kubeconfig.yaml (shittuay-kubeconfig)', https://192.168.1.119:6443: '') {
                             if (env.BRANCH_NAME == 'dev') {
                                 sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/dev/kustomization.yaml"
                                 sh "kustomize build overlays/dev | kubectl apply -f -"
