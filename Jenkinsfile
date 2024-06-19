@@ -98,11 +98,9 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                kubeconfig(credentialsId: '3f12ff7b-93cb-4ea5-bc21-79bcf5fb1925', serverUrl: '') {
-            sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/deployment.yaml'
-            sh 'kubectl --kubeconfig=$KUBECONFIG apply -f k8s/base/service.yaml'
-            // Example: Check the deployment status
-            sh 'kubectl --kubeconfig=$KUBECONFIG rollout status deployment/my-deployment-name'
+                withCredentials([file(credentialsId: '3f12ff7b-93cb-4ea5-bc21-79bcf5fb1925', variable: 'KUBECONFIG')]) {
+                    sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/master/kustomization.yaml"
+                    sh "kustomize build overlays/master | kubectl apply -f -"
                 }
             }
         }
