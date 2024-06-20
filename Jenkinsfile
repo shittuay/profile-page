@@ -98,7 +98,7 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: '3f12ff7b-93cb-4ea5-bc21-79bcf5fb1925', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' /home/shittuay/Desktop/profile_page/k8s/overlays/master/kustomization.yaml"
                     sh "kustomize build overlays/master | kubectl apply -f -"
                 }
