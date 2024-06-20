@@ -33,26 +33,6 @@ pipeline {
                 }
             }
         }
-        // stage('Quality Gate') {
-        //     steps {
-        //         script {
-        //             withSonarQubeEnv('sonar-server') {
-        //                 waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('Pytest') {
-        //     steps {
-        //         script {
-        //             sh "python3 -m venv venv"
-        //             sh "source venv/bin/activate"
-        //             sh "pip install -r requirements.txt --no-cache-dir"
-        //             sh "pip install pytest pytest-flask"
-        //             sh "pytest"
-        //         }
-        //     }
-        // }
         stage('OWASP') {
             steps {
                 dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVDAPIKEY}", odcInstallation: 'DP-Check'
@@ -97,23 +77,35 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
+            when {
+                branch 'master'
+            }
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' /home/shittuay/Desktop/profile_page/k8s/overlays/master/kustomization.yaml"
-                    sh "kustomize build overlays/master | kubectl apply -f -"
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/prod/kustomization.yaml"
+                        sh "kustomize build overlays/prod | kubectl apply -f -"
+                        slackSend channel: '#alerts', color: 'good', message: "Webcompanion with tag ${env.IMAGE_TAG} deployed to prod"
+                    }
                 }
             }
         }
     }
     post {
+        always {
+            node {
+                cleanWs()
+            }
+        }
         success {
-            slackSend channel: '#alerts', color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+            script {
+                slackSend channel: '#alerts', color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+            }
         }
         failure {
-            slackSend channel: '#alerts', color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
-        }
-        always {
-            cleanWs()
+            script {
+                slackSend channel: '#alerts', color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+            }
         }
     }
 }
