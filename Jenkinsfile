@@ -54,14 +54,16 @@ pipeline {
                 }
             }
         }
-        // stage("Docker Build") {
-        //     steps {
-        //         script {
-        //             sh "docker build -t ${IMAGE_NAME} ."
-        //             echo "Image built successfully"
+        /*
+        stage("Docker Build") {
+            steps {
+                script {
+                    sh "docker build -t ${IMAGE_NAME} ."
+                    echo "Image built successfully"
                 }
             }
         }
+        */
         stage("Trivy Image Scan") {
             steps {
                 script {
@@ -69,10 +71,10 @@ pipeline {
                 }
             }
         }
-        // stage("Docker Push") {
-        //     steps {
-        //         script {
-        //             sh "docker push ${IMAGE_NAME}"
+        stage("Docker Push") {
+            steps {
+                script {
+                    sh "docker push ${IMAGE_NAME}"
                 }
             }
         }
