@@ -82,7 +82,7 @@ pipeline {
             }
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    withCredentials([file(credentialsId: '3f12ff7b-93cb-4ea5-bc21-79bcf5fb1925', variable: 'KUBECONFIG')]) {
                         sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/prod/kustomization.yaml"
                         sh "kustomize build overlays/prod | kubectl apply -f -"
                         slackSend channel: '#alerts', color: 'good', message: "Webcompanion with tag ${env.IMAGE_TAG} deployed to prod"
@@ -93,7 +93,7 @@ pipeline {
     }
     post {
         always {
-            node {
+            node('any') {
                 cleanWs()
             }
         }
