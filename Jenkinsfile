@@ -54,7 +54,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage("Docker Build") {
             steps {
                 script {
@@ -63,7 +63,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage("Trivy Image Scan") {
             steps {
                 script {
