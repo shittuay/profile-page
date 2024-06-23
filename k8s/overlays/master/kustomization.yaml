@@ -18,7 +18,7 @@ namespace: profile-page
 
 images:
   - name: shittuay/profile_page
-    newTag: shittuay/profile_page
+    newTag: IMAGE_TAG
 
 namePrefix: master-
 labels:

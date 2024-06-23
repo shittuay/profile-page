@@ -84,10 +84,10 @@ pipeline {
             }
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/prod/kustomization.yaml"
-                        sh "kustomize build overlays/prod | kubectl apply -f -"
-                        slackSend channel: '#alerts', color: 'good', message: "Webcompanion with tag ${env.IMAGE_TAG} deployed to prod"
+                    kubeconfig(credentialsId: 'Kubeconfig', serverUrl: '') {
+                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/master/kustomization.yaml"
+                        sh "kustomize build overlays/master | kubectl apply -f -"
+                        slackSend channel: '#alerts', color: 'good', message: "Webcompanion with tag ${env.IMAGE_TAG} deployed to master"
                     }
                 }
             }
