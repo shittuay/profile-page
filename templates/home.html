@@ -1,40 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-    
-<body>
-    <header>
-        <img src="{{ url_for('static', filename='images/Abiola.jpeg') }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
-        <h1>{{ profile.name }}</h1>
-        <p>{{ profile.bio }}</p>
-        <ul>
-            <li>Email: <a href="{{ profile.email }}">{{ profile.email }}</a></li>
-            <li><a href="{{ profile.linkedin }}">LinkedIn</a></li>
-            <li><a href="{{ profile.github }}">GitHub</a></li>
-            <li><a href="{{ url_for('static', filename='css/Docs/resume.docx') }}" target="_blank">Resume</a></li>
-            <li><a href="{{ url_for('static', filename='css/Docs/Profile.pdf') }}" target="_blank">Profile</a></li>
-        </ul>
-    </header>
-    
-    <section>
-        <h2>Accomplishments</h2>
-        <ul>
-            {% for accomplishment in accomplishments %}
-                <li>
-                    <h3>{{ accomplishment.title }}</h3>
-                    <p>{{ accomplishment.description }}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    </section>
-
-    <footer>
-        <a href="/blog">Visit my blog</a>
-    </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Welcome to My Website</h1>
+<p>This is the landing page of Abiola Shittu's website.</p>
+<p>Explore my <a href="{{ url_for('profile') }}">Profile</a>, read my <a href="{{ url_for('blog') }}">Blog</a> posts, and stay updated with the latest <a href="{{ url_for('tech_news') }}">Tech News</a>.</p>
+{% endblock %}

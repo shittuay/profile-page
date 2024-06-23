@@ -4,6 +4,7 @@ metadata:
   name: profile-page-deployment
   namespace: profile-page
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: profile-page-deployment
@@ -12,21 +13,51 @@ spec:
       labels:
         app: profile-page-deployment
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: custom-label
-                    operator: In
-                    values:
-                      - k8s
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
-        - name: profile-page-deployment
-          image: shittuay/profile_page:v.0.29
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
-          ports:
-            - containerPort: 5000
+      - name: profile-page-deployment
+        image: shittuay/profile-page:dev-9233792230
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-profile-page-deployment
+  namespace: profile-page
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: master-profile-page
+  template:
+    metadata:
+      labels:
+        app: master-profile-page
+    spec:
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: master-profile-page
+        image: shittuay/profile_page:shittuay/profile_page
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+        limits:
+            memory: "512Mi"
+            cpu: "1000m"

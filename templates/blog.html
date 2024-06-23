@@ -1,27 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Blog Posts</h1>
-    </header>
-
-    <section>
-        {% for post in blog_posts %}
-            <article>
-                <h2>{{ post.title }}</h2>
-                <div>{{ post.content|safe }}</div>
-            </article>
-        {% endfor %}
-    </section>
-
-    <footer>
-        <a href="/">Back to profile</a>
-    </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Blog{% endblock %}
+{% block content %}
+<h1>Blog Posts</h1>
+<section>
+    {% for post in blog_posts %}
+        <article>
+            <h2>{{ post.title }}</h2>
+            <div>{{ post.content|safe }}</div>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

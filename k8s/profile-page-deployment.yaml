@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-page-deployment
+  namespace: profile-page
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-page-deployment
+  template:
+    metadata:
+      labels:
+        app: profile-page-deployment
+    spec:
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: profile-page-deployment
+        image: shittuay/profile_page:v.0.32  # Ensure this image name is correct
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

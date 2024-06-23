@@ -1,14 +1,26 @@
 from flask import Flask, render_template, jsonify
+from newsapi import NewsApiClient
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# Replace with your NewsAPI key
+API_KEY = os.getenv('NEWS_API_KEY')
+if not API_KEY:
+    raise ValueError("No NEWS_API_KEY found in environment variables. Please add it to your .env file.")
+
+newsapi = NewsApiClient(api_key=API_KEY)
 
 app = Flask(__name__)
 
 PROFILE = {
     'name': 'Abiola Shittu',
     'bio': 'Abiola Shittu is an experienced Cloud Engineer with over 10 years of expertise in information technology. Throughout his career, he has worked extensively with key DevOps tools to facilitate seamless web application deployments, showcasing his proficiency in cloud infrastructure and deployment automation. His dedication and technical skills have made him a valuable asset in the IT field.',
-    'email': 'mailto:abiola.shiba@gmail.com',
+    'email': 'abiola.shiba@gmail.com',
     'linkedin': 'https://www.linkedin.com/in/abiola-shittu/',
     'github': 'https://github.com/shittuay',
-    'resume': 'images/Docs/resume.docx',  # Update this with the actual path to your resume
+    'resume': 'images/Docs/resume.docx',
     'picture': 'images/Abiola.jpeg',
     'profile': 'images/Docs/Profile.pdf'
 }
@@ -31,7 +43,6 @@ ACCOMPLISHMENTS = [
     {'title': 'Award', 'description': 'AWS Cloud Quest Certification'},
     {'title': 'Award', 'description': 'AWS DevOps Engineer Certification'},
     {'title': 'Award', 'description': 'ITIL Foundation Certification'},
-    # Add more accomplishments as needed
 ]
 
 BLOG_POSTS = [
@@ -208,19 +219,21 @@ aws events put-targets --rule RotateAccessKeysRule --targets "Id"="1","Arn"="arn
 
 @app.route("/")
 def home():
-    return render_template('home.html', profile=PROFILE, accomplishments=ACCOMPLISHMENTS)
+    return render_template('home.html')
+
+@app.route("/profile")
+def profile():
+    return render_template('profile.html', profile=PROFILE, accomplishments=ACCOMPLISHMENTS)
 
 @app.route("/blog")
 def blog():
     return render_template('blog.html', blog_posts=BLOG_POSTS)
 
-@app.route("/api/accomplishments")
-def list_accomplishments():
-    return jsonify(ACCOMPLISHMENTS)
-
-@app.route("/api/blog")
-def list_blog_posts():
-    return jsonify(BLOG_POSTS)
+@app.route("/tech_news")
+def tech_news():
+    top_headlines = newsapi.get_top_headlines(category='technology', country='us')
+    articles = top_headlines['articles']
+    return render_template('news.html', articles=articles)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

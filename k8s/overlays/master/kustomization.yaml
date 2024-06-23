@@ -14,11 +14,11 @@ patches:
       kind: Service
       name: profile-page-service
 
-namespace: webcompanion
+namespace: profile-page
 
 images:
   - name: shittuay/profile_page
-    newTag: IMAGE_TAG
+    newTag: shittuay/profile_page
 
 namePrefix: master-
 labels:

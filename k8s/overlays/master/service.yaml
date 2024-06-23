@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: profile-page-service
-  namespace: profile_page
+  name: master-profile-page-service
 spec:
   selector:
-    app: profile-page-deployment
+    app: master-profile-page
   ports:
-  - port: 5000
-    targetPort: 5000
-    nodePort: 30041
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30042  # Change to an unused port
   type: NodePort
