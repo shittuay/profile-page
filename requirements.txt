@@ -1,2 +1,4 @@
 Flask
+newsapi-python
 gunicorn
+

@@ -19,13 +19,19 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: profile-page-deployment
-        image: shittuay/profile_page:v.0.32  # Ensure this image name is correct
+        image: shittuay/profile_page:v.0.37  # Ensure this image name is correct
         ports:
         - containerPort: 5000
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        env:
+        - name: NEWS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: news-api-key
+              key: API_KEY
