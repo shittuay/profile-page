@@ -1,4 +1,5 @@
 Flask
 newsapi-python
 gunicorn
+python-dotenv
 

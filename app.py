@@ -2,8 +2,12 @@ from flask import Flask, render_template, jsonify
 from newsapi import NewsApiClient
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Replace with your NewsAPI key
 API_KEY = os.getenv('NEWS_API_KEY')
@@ -131,7 +135,115 @@ BLOG_POSTS = [
             <p>Deploying a Flask app on Render is a user-friendly process, ideal for developers working on projects like a profile page website with Python, HTML, and CSS. Render takes care of the infrastructure, allowing you to focus on building your application without worrying about server management. The integration with GitHub makes it easy to update your app by simply pushing new commits to your repository.</p>
         '''
     },
+    
     {
+    'title': 'Securing Secrets in Deployment with .env Files and .gitignore',
+    'content': '''
+        <p>In today's software development landscape, securing sensitive information such as API keys, database credentials, and other secrets is paramount. One of the most effective ways to manage and protect these secrets is by using .env files in combination with .gitignore. This approach ensures that sensitive information is not exposed in your version control system, thereby mitigating the risk of accidental leaks.</p>
+
+        <p><strong>What is a .env File?</strong></p>
+        <p>A .env file is a simple text file used to store environment variables. These variables can be loaded into your application at runtime, allowing you to configure your app without hardcoding sensitive information directly into your source code.</p>
+
+        <p><strong>Example .env File</strong></p>
+        <pre><code>API_KEY=your_api_key_here
+DATABASE_URL=postgres://user:password@localhost:5432/mydatabase
+SECRET_KEY=supersecretkey</code></pre>
+
+        <p><strong>Using .gitignore to Protect Your .env File</strong></p>
+        <p>The .gitignore file is a special file that tells Git which files or directories to ignore in a project. By adding your .env file to .gitignore, you ensure that it is not tracked by Git, thus keeping your sensitive information out of your version control system.</p>
+
+        <p><strong>Example .gitignore File</strong></p>
+        <pre><code># Ignore the .env file
+.env</code></pre>
+
+        <p><strong>Setting Up Your Project</strong></p>
+
+        <p><strong>1. Create Your .env File</strong></p>
+        <p>Create a .env file in the root of your project directory and add your environment variables to it.</p>
+        <pre><code>API_KEY=your_api_key_here
+DATABASE_URL=postgres://user:password@localhost:5432/mydatabase
+SECRET_KEY=supersecretkey</code></pre>
+
+        <p><strong>2. Update Your .gitignore File</strong></p>
+        <p>Ensure your .gitignore file contains an entry to ignore the .env file.</p>
+        <pre><code># Ignore the .env file
+.env</code></pre>
+
+        <p><strong>3. Load Environment Variables in Your Application</strong></p>
+        <p>In your application code, use a library like python-dotenv to load environment variables from your .env file. Here’s an example in a Python Flask application:</p>
+
+        <p><strong>Install python-dotenv</strong></p>
+        <pre><code>pip install python-dotenv</code></pre>
+
+        <p><strong>Update app.py</strong></p>
+        <pre><code>from flask import Flask, render_template
+from newsapi import NewsApiClient
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+app = Flask(__name__)
+
+# Get the API key from the environment variables
+api_key = os.getenv('API_KEY')
+if not api_key:
+    raise ValueError("No API_KEY set for Flask application")
+
+newsapi = NewsApiClient(api_key=api_key)
+
+@app.route("/tech-news")
+def tech_news():
+    top_headlines = newsapi.get_top_headlines(category='technology')
+    articles = top_headlines.get('articles', [])
+    return render_template('news.html', articles=articles)
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+
+        <p><strong>Deploying to Production</strong></p>
+        <p>When deploying to a production environment, you can securely provide your environment variables directly to the environment where your application runs. For example, in a Kubernetes deployment, you can use Kubernetes Secrets to manage and inject sensitive information.</p>
+
+        <p><strong>Example Kubernetes Secret</strong></p>
+        <pre><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+type: Opaque
+data:
+  API_KEY: base64_encoded_api_key_here</code></pre>
+
+        <p><strong>Using the Secret in a Deployment</strong></p>
+        <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: my-app-image
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: API_KEY</code></pre>
+
+        <p><strong>Conclusion</strong></p>
+        <p>Using .env files and .gitignore is a simple yet powerful way to manage and protect your secrets during development. By ensuring that sensitive information is not exposed in your version control system, you can reduce the risk of accidental leaks and enhance the security of your applications. When moving to production, consider using more robust secret management solutions like Kubernetes Secrets to securely manage your environment variables.</p>
+    '''
+},
+{
         'title': 'Managing Single Sign-On with Temporary Access Keys and Automating Key Rotation with AWS Lambda',
         'content': '''
             <h3>Introduction</h3>

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Tech News{% endblock %}
 {% block content %}
-<h1>Latest Tech News</h1>
 <section>
+    <h1>Tech News</h1>
     {% for article in articles %}
         <article>
-            <h2><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h2>
+            <h2>{{ article.title }}</h2>
             <p>{{ article.description }}</p>
+            <a href="{{ article.url }}" target="_blank">Read more</a>
         </article>
     {% endfor %}
 </section>

@@ -2,6 +2,7 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <h1>Welcome to My Website</h1>
+<img src="{{ url_for('static', filename='images/Abiola.jpeg') }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
 <p>This is the landing page of Abiola Shittu's website.</p>
 <p>Explore my <a href="{{ url_for('profile') }}">Profile</a>, read my <a href="{{ url_for('blog') }}">Blog</a> posts, and stay updated with the latest <a href="{{ url_for('tech_news') }}">Tech News</a>.</p>
 {% endblock %}

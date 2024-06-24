@@ -2,10 +2,10 @@
 {% block title %}Profile{% endblock %}
 {% block content %}
 <h1>{{ profile.name }}</h1>
-<img src="{{ url_for('static', filename=profile.picture) }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
 <p>{{ profile.bio }}</p>
+<img src="{{ url_for('static', filename='images/Abiola.jpeg') }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
 <ul>
-    <li>Email: <a href="mailto:{{ profile.email }}">{{ profile.email }}</a></li>
+    <li>Email: <a href="{{ profile.email }}">{{ profile.email }}</a></li>
     <li><a href="{{ profile.linkedin }}">LinkedIn</a></li>
     <li><a href="{{ profile.github }}">GitHub</a></li>
     <li><a href="{{ url_for('static', filename=profile.resume) }}" target="_blank">Resume</a></li>
