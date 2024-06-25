@@ -3,6 +3,7 @@ from newsapi import NewsApiClient
 from dotenv import load_dotenv
 import os
 import logging
+import requests
 
 load_dotenv()
 
@@ -14,9 +15,17 @@ API_KEY = os.getenv('NEWS_API_KEY')
 if not API_KEY:
     raise ValueError("No NEWS_API_KEY found in environment variables. Please add it to your .env file.")
 
-newsapi = NewsApiClient(api_key=API_KEY)
+# Create a custom session to disable SSL verification
+session = requests.Session()
+session.verify = False
+
+newsapi = NewsApiClient(api_key=API_KEY, session=session)
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
+app.config['NEWS_API_KEY'] = os.getenv('NEWS_API_KEY', 'default_api_key')
+
 
 PROFILE = {
     'name': 'Abiola Shittu',
@@ -30,19 +39,19 @@ PROFILE = {
 }
 
 ACCOMPLISHMENTS = [
-    {'title': 'Project 1', 'description': 'Web-application project deployment on AWS Cloud using Terraform and Jenkins'},
-    {'title': 'Project 2', 'description': 'Iam key rotation automation using AWS Lambda and CloudWatch Events'},
-    {'title': 'Project 3', 'description': 'Creating bulk EC2 instances using Terraform'},
-    {'title': 'Project 4', 'description': 'creating a VPC with public and private subnets using cloudformation '},
-    {'title': 'Project 5', 'description': 'used aws security hub to monitor security compliance of aws resources'},
-    {'title': 'Project 6', 'description': 'created mysql database on aws rds and connected to an ec2 instance using terraform'},
-    {'title': 'Project 7', 'description': 'work on several migration projects from on-premises to aws cloud using aws server migration service'},
-    {'title': 'Project 8', 'description': 'created control tower and landing zone using aws organizations and service catalog'},
-    {'title': 'Project 9', 'description': 'created auto scaling, target groups and load balancers using terraform and attaching a waf to the load balancer'},
-    {'title': 'Project 10', 'description': 'creating a blue-green deployment using Aws ecs and code commit, code deploy and code pipeline'},
-    {'title': 'Project 11', 'description': 'Python-flask web application deployment on Kubernetes cluster using Helm and Kustomize'},
-    {'title': 'Project 12', 'description': 'created a CI/CD pipeline using Jenkins, sonarqube, nexus and Github'},
-    {'title': 'Project 13', 'description': 'created s3 bucket and enabled versioning and lifecycle policy using terraform'},
+    {'title': 'Project 1', 'description': 'Deployed a web application project on AWS Cloud using Terraform and Jenkins'},
+    {'title': 'Project 2', 'description': 'Automated IAM key rotation using AWS Lambda and CloudWatch Events'},
+    {'title': 'Project 3', 'description': 'Created bulk EC2 instances using Terraform'},
+    {'title': 'Project 4', 'description': 'Set up a VPC with public and private subnets using CloudFormation'},
+    {'title': 'Project 5', 'description': 'Monitored AWS resources for security compliance using AWS Security Hub'},
+    {'title': 'Project 6', 'description': 'Created a MySQL database on AWS RDS and connected it to an EC2 instance using Terraform'},
+    {'title': 'Project 7', 'description': 'Led multiple migration projects from on-premises to AWS Cloud using AWS Server Migration Service'},
+    {'title': 'Project 8', 'description': 'Implemented Control Tower and landing zone using AWS Organizations and Service Catalog'},
+    {'title': 'Project 9', 'description': 'Configured auto-scaling, target groups, and load balancers using Terraform and attached a WAF to the load balancer'},
+    {'title': 'Project 10', 'description': 'Executed a blue-green deployment using AWS ECS and CodeCommit, CodeDeploy, and CodePipeline'},
+    {'title': 'Project 11', 'description': 'Deployed a Python-Flask web application on a Kubernetes cluster using Helm and Kustomize'},
+    {'title': 'Project 12', 'description': 'Developed a CI/CD pipeline using Jenkins, SonarQube, Nexus, and GitHub'},
+    {'title': 'Project 13', 'description': 'Created an S3 bucket and enabled versioning and lifecycle policy using Terraform'},
     {'title': 'Award', 'description': 'AWS Cloud Practitioner Certification'},
     {'title': 'Award', 'description': 'AWS Cloud Quest Certification'},
     {'title': 'Award', 'description': 'AWS DevOps Engineer Certification'},
@@ -244,6 +253,119 @@ spec:
     '''
 },
 {
+    'title': 'Hosting Your Own Kubernetes (K8s) Cluster Locally with NVIDIA GPU, 2TB Storage, and 64/128GB Memory',
+    'content': '''
+        <h3>Introduction</h3>
+        <p>Setting up a Kubernetes (K8s) cluster locally can provide a robust environment for testing and deploying applications, especially when equipped with powerful hardware such as an NVIDIA GPU, 2TB storage, and 64/128GB memory. This guide will walk you through the process of setting up your K8s cluster, installing necessary tools, configuring port forwarding on your home WiFi, and leveraging Cloudflare's free services for hosting web applications.</p>
+
+        <h3>Hardware Requirements</h3>
+        <ul>
+            <li><strong>NVIDIA GPU:</strong> Ideal for workloads requiring intensive computational power such as machine learning or AI applications.</li>
+            <li><strong>Storage:</strong> 2TB SSD/HDD to handle large datasets and provide ample storage for applications.</li>
+            <li><strong>Memory:</strong> 64GB or 128GB RAM to ensure smooth operation of multiple pods and services.</li>
+        </ul>
+
+        <h3>Software Requirements</h3>
+        <ul>
+            <li><strong>Operating System:</strong> Ubuntu 20.04 LTS or a similar Linux distribution.</li>
+            <li><strong>Docker:</strong> Container runtime for Kubernetes.</li>
+            <li><strong>Kubernetes:</strong> For orchestrating containers.</li>
+            <li><strong>kubectl:</strong> Command-line tool for interacting with the Kubernetes cluster.</li>
+            <li><strong>k3s:</strong> Lightweight Kubernetes distribution.</li>
+            <li><strong>NVIDIA Docker:</strong> To run GPU-accelerated containers.</li>
+            <li><strong>Helm:</strong> Kubernetes package manager.</li>
+        </ul>
+
+        <h3>Step-by-Step Guide</h3>
+
+        <h4>1. Setting Up Your Environment</h4>
+        <p><strong>Install Docker:</strong></p>
+        <pre><code>
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        sudo apt-get update
+        sudo apt-get install -y docker-ce
+        sudo usermod -aG docker ${USER}
+        </code></pre>
+
+        <p><strong>Install NVIDIA Docker:</strong></p>
+        <pre><code>
+        distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+        curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+        curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+        sudo apt-get update && sudo apt-get install -y nvidia-docker2
+        sudo systemctl restart docker
+        </code></pre>
+
+        <p><strong>Install k3s:</strong></p>
+        <pre><code>
+        curl -sfL https://get.k3s.io | sh -
+        </code></pre>
+
+        <p><strong>Install kubectl:</strong></p>
+        <pre><code>
+        sudo snap install kubectl --classic
+        </code></pre>
+
+        <p><strong>Install Helm:</strong></p>
+        <pre><code>
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        </code></pre>
+
+        <h4>2. Configuring Kubernetes for GPU</h4>
+        <p><strong>Install NVIDIA Kubernetes Device Plugin:</strong></p>
+        <pre><code>
+        kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.9.0/nvidia-device-plugin.yml
+        </code></pre>
+
+        <h4>3. Configuring Port Forwarding on Your Home WiFi</h4>
+        <p><strong>Access Your Router:</strong> Open a web browser and enter the IP address of your router (typically `192.168.1.1` or `192.168.0.1`).</p>
+        <p><strong>Login:</strong> Enter your router's username and password.</p>
+        <p><strong>Navigate to Port Forwarding Section:</strong> Usually found under "Advanced" or "Firewall".</p>
+        <p><strong>Create a New Port Forwarding Rule:</strong></p>
+        <ul>
+            <li><strong>Service Name:</strong> Kubernetes</li>
+            <li><strong>Protocol:</strong> TCP/UDP</li>
+            <li><strong>External Port:</strong> 80, 443 (HTTP, HTTPS)</li>
+            <li><strong>Internal IP:</strong> Enter the local IP address of your Kubernetes master node.</li>
+            <li><strong>Internal Port:</strong> 80, 443</li>
+        </ul>
+
+        <h4>4. Leveraging Cloudflare for Free Hosting</h4>
+        <p><strong>Sign Up for Cloudflare:</strong> Go to <a href="https://www.cloudflare.com/">Cloudflare</a> and create a free account.</p>
+        <p><strong>Add Your Domain:</strong> Follow the prompts to add your domain and update your DNS settings with the provided Cloudflare nameservers.</p>
+        <p><strong>Set Up SSL/TLS:</strong></p>
+        <ul>
+            <li>Go to the SSL/TLS section in Cloudflare dashboard.</li>
+            <li>Choose "Flexible" or "Full" to enable HTTPS.</li>
+        </ul>
+        <p><strong>Configure DNS:</strong></p>
+        <ul>
+            <li>Add an A record pointing to your home's external IP address (found via `whatismyip.com`).</li>
+            <li>Add a CNAME record for `www` pointing to your domain.</li>
+        </ul>
+
+        <p><strong>Install Cloudflare Argo Tunnel:</strong></p>
+        <pre><code>
+        curl -L https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb -o cloudflared.deb
+        sudo dpkg -i cloudflared.deb
+        cloudflared tunnel login
+        </code></pre>
+
+        <p><strong>Create and Run Tunnel:</strong></p>
+        <pre><code>
+        cloudflared tunnel create my-tunnel
+        cloudflared tunnel route dns my-tunnel example.com
+        cloudflared tunnel run my-tunnel
+        </code></pre>
+
+        <h4>Conclusion</h4>
+        <p>By following these steps, you can set up a robust local Kubernetes cluster with powerful hardware, configure it to leverage your home network for external access, and utilize Cloudflare’s free services to host web applications. This setup not only provides a great environment for development and testing but also leverages powerful resources for high-performance applications.</p>
+    '''
+},
+{
         'title': 'Managing Single Sign-On with Temporary Access Keys and Automating Key Rotation with AWS Lambda',
         'content': '''
             <h3>Introduction</h3>
@@ -343,9 +465,18 @@ def blog():
 
 @app.route("/tech_news")
 def tech_news():
-    top_headlines = newsapi.get_top_headlines(category='technology', country='us')
-    articles = top_headlines['articles']
-    return render_template('news.html', articles=articles)
+    try:
+        top_headlines = newsapi.get_top_headlines(category='technology', country='us')
+        articles = top_headlines.get('articles', [])
+        if not articles:
+            logger.info("No articles found")
+        else:
+            logger.info(f"Fetched {len(articles)} articles")
+        return render_template('tech_news.html', articles=articles)
+    except Exception as e:
+        logger.error(f"Error fetching tech news: {e}")
+        return render_template('tech_news.html', articles=[])
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

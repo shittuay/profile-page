@@ -46,7 +46,7 @@ header nav ul li a:hover {
     width: 100%;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
 
@@ -67,34 +67,46 @@ header nav ul li a:hover {
     font-size: 1.2em;
 }
 
-.accomplishments {
+.accomplishments, .tech-news, .blog-posts {
     max-width: 800px;
     width: 100%;
     margin: 20px auto;
     padding: 20px;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.accomplishments h2 {
-    text-align: center;
+.accomplishments h2, .tech-news h1, .blog-posts h1 {
     font-size: 2em;
     margin-bottom: 20px;
 }
 
-.accomplishments ul {
+.accomplishments ul, .tech-news ul, .blog-posts ul {
     list-style: none;
     padding: 0;
+    text-align: left;
 }
 
-.accomplishments ul li {
+.accomplishments ul li, .tech-news ul li, .blog-posts ul li {
     margin: 10px 0;
 }
 
-.accomplishments ul li h3 {
+.accomplishments ul li h3, .tech-news ul li h2, .blog-posts ul li h2 {
     margin: 0;
     font-size: 1.5em;
+}
+
+.tech-news article, .blog-posts article {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    margin: auto;
 }
 
 footer {
@@ -119,7 +131,7 @@ footer a {
         margin-bottom: 20px;
     }
 
-    .accomplishments {
+    .accomplishments, .tech-news, .blog-posts {
         padding: 10px;
     }
 
