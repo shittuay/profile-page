@@ -19,7 +19,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: profile-page-deployment
-        image: shittuay/profile_page:v.0.56 # Ensure this image name is correct
+        image: shittuay/profile_page:v.0.62 # Ensure this image name is correct
         ports:
         - containerPort: 5000
         resources:

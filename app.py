@@ -4,6 +4,21 @@ from dotenv import load_dotenv
 import os
 import logging
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
+from urllib3.exceptions import InsecureRequestWarning
+import warnings
+
+warnings.simplefilter('ignore', InsecureRequestWarning)
+
+class CustomHttpAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_version=None
+        )
 
 load_dotenv()
 
@@ -15,16 +30,15 @@ API_KEY = os.getenv('NEWS_API_KEY')
 if not API_KEY:
     raise ValueError("No NEWS_API_KEY found in environment variables. Please add it to your .env file.")
 
-# Create a custom session to disable SSL verification
 session = requests.Session()
-session.verify = False
+session.mount('https://', CustomHttpAdapter())
 
 newsapi = NewsApiClient(api_key=API_KEY, session=session)
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
-app.config['NEWS_API_KEY'] = os.getenv('NEWS_API_KEY', 'default_api_key')
+
+
 
 
 PROFILE = {
@@ -466,17 +480,24 @@ def blog():
 @app.route("/tech_news")
 def tech_news():
     try:
-        top_headlines = newsapi.get_top_headlines(category='technology', country='us')
+        response = requests.get(
+            'https://newsapi.org/v2/top-headlines',
+            params={'language': 'en', 'country': 'us', 'category': 'technology'},
+            headers={'Authorization': f'Bearer {API_KEY}'},
+            verify=False  # Disable SSL verification for testing purposes
+        )
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        top_headlines = response.json()
         articles = top_headlines.get('articles', [])
-        if not articles:
-            logger.info("No articles found")
-        else:
-            logger.info(f"Fetched {len(articles)} articles")
         return render_template('tech_news.html', articles=articles)
-    except Exception as e:
-        logger.error(f"Error fetching tech news: {e}")
-        return render_template('tech_news.html', articles=[])
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err}")
+    except Exception as err:
+        logger.error(f"Error fetching tech news: {err}")
+    return render_template('tech_news.html', articles=[])
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
