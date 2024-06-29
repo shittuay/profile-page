@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from newsapi import NewsApiClient
 from dotenv import load_dotenv
 import os
@@ -8,6 +9,9 @@ from requests.adapters import HTTPAdapter
 from urllib3.poolmanager import PoolManager
 from urllib3.exceptions import InsecureRequestWarning
 import warnings
+
+from models import db, NewsArticle, BlogPost
+
 
 warnings.simplefilter('ignore', InsecureRequestWarning)
 
@@ -37,6 +41,26 @@ newsapi = NewsApiClient(api_key=API_KEY, session=session)
 
 app = Flask(__name__)
 
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tech_news.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database
+db = SQLAlchemy(app)
+
+# Define a model for Tech News articles
+class NewsArticle(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    url = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return f'<NewsArticle {self.title}>'
+
+# Create the database tables
+with app.app_context():
+    db.create_all()
 
 
 
@@ -510,15 +534,30 @@ def tech_news():
         response.raise_for_status()  # Raise HTTPError for bad responses
         top_headlines = response.json()
         articles = top_headlines.get('articles', [])
+        
+        # Save articles to the database
+        for article in articles:
+            if not NewsArticle.query.filter_by(url=article['url']).first():
+                new_article = NewsArticle(
+                    title=article['title'],
+                    description=article.get('description', ''),
+                    url=article['url']
+                )
+                db.session.add(new_article)
+        db.session.commit()
+        
+        # Fetch all articles from the database
+        articles = NewsArticle.query.all()
+        
         return render_template('tech_news.html', articles=articles)
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred: {http_err}")
     except Exception as err:
         logger.error(f"Error fetching tech news: {err}")
-    return render_template('tech_news.html', articles=[])
+    return render_template('tech_news.html', articles=NewsArticle.query.all())
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+

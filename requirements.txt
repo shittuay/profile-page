@@ -2,4 +2,5 @@ Flask
 newsapi-python
 gunicorn
 python-dotenv
+flask_sqlalchemy
 
