@@ -102,18 +102,24 @@ pipeline {
     }
     post {
         always {
+            script {
+                echo "Sending Slack notification..."
+                echo "SLACK_CHANNEL: ${env.SLACK_CHANNEL}"
+                echo "SLACK_CREDENTIALS_ID: ${env.SLACK_CREDENTIALS_ID}"
+                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Build completed: ${currentBuild.currentResult}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+            }
             node('any') {
                 cleanWs()
             }
         }
         success {
             script {
-                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
         failure {
             script {
-                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
     }
