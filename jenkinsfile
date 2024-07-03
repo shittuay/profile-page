@@ -108,7 +108,7 @@ pipeline {
                 echo "SLACK_CREDENTIALS_ID: ${env.SLACK_CREDENTIALS_ID}"
                 slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Build completed: ${currentBuild.currentResult}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
-            node {
+            node(any){
                 cleanWs()
             }
         }
