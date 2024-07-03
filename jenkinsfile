@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('1f6db55a-8b60-4ab1-81df-b5e28ebae8fc')
-        NVDAPIKEY = credentials('ed62b912-6db4-4d3a-a445-a1799077253e')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
+        NVDAPIKEY = credentials('NVDAPIKey')
         SCANNER_HOME = tool 'sonar-scanner'
         DOCKERHUB_USERNAME = 'shittuay'
         DEPLOYMENT_NAME = 'profile_page'
