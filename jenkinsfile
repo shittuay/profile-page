@@ -2,36 +2,17 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-token'
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
         SLACK_CHANNEL = '#jenkins'
         SLACK_CREDENTIALS_ID = 'slack-token'
-        SONARQUBE_ENV = 'sonar-server'  // Update this with your SonarQube server name
-        SONARQUBE_URL = 'http://192.168.1.119:9000'  // SonarQube server URL
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/shittuay/profile_page.git']]])
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv(env.SONARQUBE_ENV) {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
-                            sh '''
-                                sonar-scanner \
-                                    -Dsonar.projectKey=profile_page \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.host.url=${SONARQUBE_URL} \
-                                    -Dsonar.login=${SONARQUBE_TOKEN}
-                            '''
-                        }
-                    }
-                }
             }
         }
         stage('Docker Build') {
@@ -78,14 +59,12 @@ pipeline {
         }
         success {
             script {
-                echo "Sending success notification to Slack"
-                slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Deployment successful: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID)
+                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Deployment successful: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
         failure {
             script {
-                echo "Sending failure notification to Slack"
-                slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Deployment failed: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID)
+                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "Deployment failed: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
     }
