@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
-        DOCKERHUB_USERNAME = "${shittuayR}"
+        DOCKERHUB_USERNAME = "${shittuay}"
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
