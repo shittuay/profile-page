@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
-        DOCKERHUB_USERNAME = "${shittuay}"
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
@@ -20,7 +19,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ."
+                    withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS_ID, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "docker build -t ${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG} ."
+                    }
                     echo "Image built successfully"
                 }
             }
@@ -28,8 +29,10 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-                    sh "docker push ${IMAGE_NAME}"
+                    withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS_ID, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+                        sh "docker push ${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
+                    }
                     echo "Image pushed successfully"
                 }
             }
@@ -48,6 +51,9 @@ pipeline {
         }
     }
     post {
+        always {
+            cleanWs()
+        }
         success {
             script {
                 slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Deployment successful: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
@@ -57,9 +63,6 @@ pipeline {
             script {
                 slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "Deployment failed: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
-        }
-        always {
-            cleanWs()
         }
     }
 }
