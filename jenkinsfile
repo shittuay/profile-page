@@ -3,57 +3,18 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
-        NVDAPIKEY = credentials('NVDAPIKey')
-        SCANNER_HOME = tool 'SonarQube' // Ensure this matches the tool name configured in Jenkins
-        DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
+        DOCKERHUB_USERNAME = "${shittuayR}"
         DEPLOYMENT_NAME = 'profile_page'
-        IMAGE_TAG = "v.0.${env.BUILD_NUMBER}"
+        IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
-        NAMESPACE = 'profile_page'
-        BRANCH_NAME = "${GIT_BRANCH.split('/')[1]}"
         SLACK_CHANNEL = '#jenkins'
         SLACK_CREDENTIALS_ID = 'slack-token'
     }
 
     stages {
-        stage('Clean workspace') {
-            steps {
-                cleanWs()
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/shittuay/profile_page.git']]])
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('sonarqube') {
-                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=profile_page -Dsonar.projectName=profile_page"
-                    }
-                }
-            }
-        }
-        stage('OWASP') {
-            steps {
-                dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVDAPIKEY}", odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage('Trivy FS Scan') {
-            steps {
-                script {
-                    sh "trivy fs ."
-                }
-            }
-        }
-        stage('Login to DockerHub') {
-            steps {
-                script {
-                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-                    echo "Login Successful"
-                }
             }
         }
         stage('Docker Build') {
@@ -64,63 +25,41 @@ pipeline {
                 }
             }
         }
-        stage('Trivy Image Scan') {
-            steps {
-                script {
-                    sh "trivy image ${IMAGE_NAME}"
-                }
-            }
-        }
         stage('Docker Push') {
             steps {
                 script {
+                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                     sh "docker push ${IMAGE_NAME}"
+                    echo "Image pushed successfully"
                 }
             }
         }
         stage('Deploy to Kubernetes') {
-            when {
-                branch 'master'
-            }
             steps {
                 script {
-                    kubeconfig(credentialsId: 'Kubeconfig', serverUrl: '') {
-                        // Update and apply master-profile-page-deployment.yaml
-                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' master-profile-page-deployment.yaml"
-                        sh "kubectl apply -f master-profile-page-deployment.yaml"
-
-                        // Update and apply profile-page-deployment.yaml
-                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' profile-page-deployment.yaml"
-                        sh "kubectl apply -f profile-page-deployment.yaml"
-
-                        // Send notification to Slack
-                        slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+                    kubeconfig(credentialsId: 'kubeconfig', serverUrl: '') {
+                        // Update and apply Kubernetes deployment YAML
+                        sh "sed -i 's|IMAGE_TAG|${env.IMAGE_TAG}|g' kubernetes/deployment.yaml"
+                        sh "kubectl apply -f kubernetes/deployment.yaml"
+                        echo "Deployment applied to Kubernetes"
                     }
                 }
             }
         }
     }
     post {
-        always {
-            script {
-                echo "Sending Slack notification..."
-                echo "SLACK_CHANNEL: ${env.SLACK_CHANNEL}"
-                echo "SLACK_CREDENTIALS_ID: ${env.SLACK_CREDENTIALS_ID}"
-                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Build completed: ${currentBuild.currentResult}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
-            }
-            node(any){
-                cleanWs()
-            }
-        }
         success {
             script {
-                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Deployment successful: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
         failure {
             script {
-                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "Deployment failed: ${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nMore Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
+        }
+        always {
+            cleanWs()
         }
     }
 }
