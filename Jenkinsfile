@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonar-server') {
-                        sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=profile_page -Dsonar.projectName=profile_page"
+                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=profile_page -Dsonar.projectName=profile_page"
                     }
                 }
             }
@@ -46,7 +46,7 @@ pipeline {
                 }
             }
         }
-        stage("Login to DockerHub") {
+        stage('Login to DockerHub') {
             steps {
                 script {
                     sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
@@ -54,8 +54,7 @@ pipeline {
                 }
             }
         }
-        
-        stage("Docker Build") {
+        stage('Docker Build') {
             steps {
                 script {
                     sh "docker build -t ${IMAGE_NAME} ."
@@ -63,15 +62,14 @@ pipeline {
                 }
             }
         }
-        
-        stage("Trivy Image Scan") {
+        stage('Trivy Image Scan') {
             steps {
                 script {
                     sh "trivy image ${IMAGE_NAME}"
                 }
             }
         }
-        stage("Docker Push") {
+        stage('Docker Push') {
             steps {
                 script {
                     sh "docker push ${IMAGE_NAME}"
@@ -85,20 +83,16 @@ pipeline {
             steps {
                 script {
                     kubeconfig(credentialsId: 'Kubeconfig', serverUrl: '') {
-                    // Update master-profile-page-deployment.yaml with the new IMAGE_TAG
-                    sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' master-profile-page-deployment.yaml"
-                    // Apply the master-profile-page-deployment.yaml
-                    sh "kubectl apply -f master-profile-page-deployment.yaml"
-    
-                   // Update profile-page-deployment.yaml with the new IMAGE_TAG
-                   sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' profile-page-deployment.yaml"
-                   // Apply the profile-page-deployment.yaml
-                   sh "kubectl apply -f profile-page-deployment.yaml"
-    
-                   // Send notification to Slack
-                   slackSend channel: '#alerts', color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master"
-                      }
+                        // Update and apply master-profile-page-deployment.yaml
+                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' master-profile-page-deployment.yaml"
+                        sh "kubectl apply -f master-profile-page-deployment.yaml"
 
+                        // Update and apply profile-page-deployment.yaml
+                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' profile-page-deployment.yaml"
+                        sh "kubectl apply -f profile-page-deployment.yaml"
+
+                        // Send notification to Slack
+                        slackSend channel: '#alerts', color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master"
                     }
                 }
             }
@@ -106,19 +100,13 @@ pipeline {
     }
     post {
         always {
-            node('any') {
-                cleanWs()
-            }
+            cleanWs()
         }
         success {
-            script {
-                slackSend channel: '#alerts', color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
-            }
+            slackSend channel: '#alerts', color: 'good', message: "SUCCESS: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}"
         }
         failure {
-            script {
-                slackSend channel: '#alerts', color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
-            }
+            slackSend channel: '#alerts', color: 'danger', message: "FAILURE: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}"
         }
     }
 }
