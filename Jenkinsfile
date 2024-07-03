@@ -100,13 +100,19 @@ pipeline {
     }
     post {
         always {
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
         success {
-            slackSend channel: '#alerts', color: 'good', message: "SUCCESS: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}"
+            script {
+                slackSend channel: '#alerts', color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+            }
         }
         failure {
-            slackSend channel: '#alerts', color: 'danger', message: "FAILURE: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \nMore Info: ${env.BUILD_URL}"
+            script {
+                slackSend channel: '#alerts', color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+            }
         }
     }
 }
