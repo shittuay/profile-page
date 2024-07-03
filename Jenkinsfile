@@ -85,9 +85,20 @@ pipeline {
             steps {
                 script {
                     kubeconfig(credentialsId: 'Kubeconfig', serverUrl: '') {
-                        sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' overlays/master/kustomization.yaml"
-                        sh "kustomize build overlays/master | kubectl apply -f -"
-                        slackSend channel: '#alerts', color: 'good', message: "Webcompanion with tag ${env.IMAGE_TAG} deployed to master"
+                    // Update master-profile-page-deployment.yaml with the new IMAGE_TAG
+                    sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' master-profile-page-deployment.yaml"
+                    // Apply the master-profile-page-deployment.yaml
+                    sh "kubectl apply -f master-profile-page-deployment.yaml"
+    
+                   // Update profile-page-deployment.yaml with the new IMAGE_TAG
+                   sh "sed -i 's/IMAGE_TAG/${env.IMAGE_TAG}/g' profile-page-deployment.yaml"
+                   // Apply the profile-page-deployment.yaml
+                   sh "kubectl apply -f profile-page-deployment.yaml"
+    
+                   // Send notification to Slack
+                   slackSend channel: '#alerts', color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master"
+                      }
+
                     }
                 }
             }
