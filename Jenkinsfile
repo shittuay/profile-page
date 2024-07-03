@@ -92,7 +92,7 @@ pipeline {
                         sh "kubectl apply -f profile-page-deployment.yaml"
 
                         // Send notification to Slack
-                        slackSend channel: '#alerts', color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master"
+                        slackSend channel: '#alerts', color: 'good', message: "jenkins with tag ${env.IMAGE_TAG} deployed to master"
                     }
                 }
             }
@@ -100,7 +100,7 @@ pipeline {
     }
     post {
         always {
-            node {
+            node('any'){
                 cleanWs()
             }
         }
