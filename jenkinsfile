@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-token'
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
         SLACK_CHANNEL = '#jenkins'
         SLACK_CREDENTIALS_ID = 'slack-token'
         SONARQUBE_ENV = 'sonar-server'  // Update this with your SonarQube server name
-        SONARQUBE_TOKEN = credentials('sonar-token')  // SonarQube token stored in Jenkins credentials
         SONARQUBE_URL = 'http://192.168.1.119:9000'  // SonarQube server URL
     }
 
@@ -22,7 +21,15 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv(env.SONARQUBE_ENV) {
-                        sh "sonar-scanner -Dsonar.projectKey=profile_page -Dsonar.sources=./ -Dsonar.host.url=${env.SONARQUBE_URL} -Dsonar.login=${env.SONARQUBE_TOKEN}"
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
+                            sh '''
+                                sonar-scanner \
+                                    -Dsonar.projectKey=profile_page \
+                                    -Dsonar.sources=. \
+                                    -Dsonar.host.url=${SONARQUBE_URL} \
+                                    -Dsonar.login=${SONARQUBE_TOKEN}
+                            '''
+                        }
                     }
                 }
             }
