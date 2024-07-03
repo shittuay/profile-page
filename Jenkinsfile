@@ -11,6 +11,8 @@ pipeline {
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
         NAMESPACE = 'profile_page'
         BRANCH_NAME = "${GIT_BRANCH.split('/')[1]}"
+        SLACK_CHANNEL = '#jenkins'
+        SLACK_CREDENTIALS_ID = 'slack-token'
     }
 
     stages {
@@ -92,7 +94,7 @@ pipeline {
                         sh "kubectl apply -f profile-page-deployment.yaml"
 
                         // Send notification to Slack
-                        slackSend channel: '#alerts', color: 'good', message: "jenkins with tag ${env.IMAGE_TAG} deployed to master"
+                        slackSend channel: SLACK_CHANNEL, color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master", tokenCredentialId: SLACK_CREDENTIALS_ID
                     }
                 }
             }
@@ -100,18 +102,18 @@ pipeline {
     }
     post {
         always {
-            node('any'){
+            node('any') {
                 cleanWs()
             }
         }
         success {
             script {
-                slackSend channel: '#alerts', color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+                slackSend channel: SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: SLACK_CREDENTIALS_ID
             }
         }
         failure {
             script {
-                slackSend channel: '#alerts', color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info ${env.BUILD_URL}"
+                slackSend channel: SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: SLACK_CREDENTIALS_ID
             }
         }
     }
