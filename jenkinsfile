@@ -8,8 +8,8 @@ pipeline {
         SLACK_CHANNEL = '#jenkins'
         SLACK_CREDENTIALS_ID = 'slack-token'
         SONARQUBE_ENV = 'sonar-server'  // Update this with your SonarQube server name
-        SONARQUBE_TOKEN = credentials('sonarqube-token')  // SonarQube token stored in Jenkins credentials
-        SONARQUBE_URL = 'http://YOUR_SONARQUBE_SERVER_URL'  // SonarQube server URL
+        SONARQUBE_TOKEN = credentials('sonar-token2')  // SonarQube token stored in Jenkins credentials
+        SONARQUBE_URL = 'http://192.168.1.119:9000/'  // SonarQube server URL
     }
 
     stages {
