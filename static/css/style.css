@@ -8,9 +8,6 @@ body {
     padding: 0;
     background-color: #f4f4f4;
     color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 header {
@@ -71,7 +68,7 @@ header nav ul li a:hover {
     font-size: 1.2em;
 }
 
-.accomplishments, .tech-news, .blog-posts {
+.accomplishments, .tech-news, .blog-posts-section {
     max-width: 800px;
     width: 100%;
     margin: 20px auto;
@@ -79,12 +76,12 @@ header nav ul li a:hover {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
 
-.accomplishments h2, .tech-news h1, .blog-posts h1 {
+.accomplishments h2, .tech-news h1, .blog-posts-section h1 {
     font-size: 2em;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .accomplishments ul, .tech-news ul, .blog-posts ul {
@@ -102,26 +99,19 @@ header nav ul li a:hover {
     font-size: 1.5em;
 }
 
-.tech-news article, .blog-posts article {
+.tech-news article, .blog-posts-section article {
     margin-bottom: 20px;
     padding: 20px;
     border: 1px solid #ddd;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    margin: auto;
 }
 
-.blog-posts {
+.blog-posts-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.blog-posts article {
-    width: 100%;
-    max-width: 2000px; /* Adjust this value if you want to limit the width of blog posts */
 }
 
 footer {
@@ -146,7 +136,7 @@ footer a {
         margin-bottom: 20px;
     }
 
-    .accomplishments, .tech-news, .blog-posts {
+    .accomplishments, .tech-news, .blog-posts-section {
         padding: 10px;
     }
 

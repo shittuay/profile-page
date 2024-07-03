@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-<section class="blog-posts-section">
-    <h1>Blog Posts</h1>
-    <div class="blog-posts">
-        {% for post in blog_posts %}
-            <article class="blog-post">
-                <h2>{{ post.title }}</h2>
-                <div>{{ post.content|safe }}</div>
-            </article>
-        {% endfor %}
-    </div>
-</section>
+<div class="container mt-4">
+    <section class="blog-posts-section">
+        <h1 class="text-center mb-4">Blog Posts</h1>
+        <div class="row">
+            {% for post in blog_posts %}
+                <article class="col-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2 mb-4 blog-post">
+                    <h2>{{ post.title }}</h2>
+                    <div>{{ post.content|safe }}</div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

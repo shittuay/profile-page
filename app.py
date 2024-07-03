@@ -98,6 +98,116 @@ ACCOMPLISHMENTS = [
 
 BLOG_POSTS = [
     {
+        'title': 'Creating and Managing a GitHub Repository: Avoiding Common Pitfalls',
+        'content': '''
+<p>🚀 <strong>Creating and Managing a GitHub Repository: Avoiding Common Pitfalls</strong></p>
+
+<p><strong>By: [Abiola Shittu](https://github.com/shittuay)</strong></p>
+
+<p>Today, I want to share an experience I recently had with managing a GitHub repository and how to recover from a common mistake that many of us might encounter.</p>
+
+<h3>Step-by-Step Journey</h3>
+
+<p><strong>1. Creating the Repository:</strong><br>
+I started by creating a new repository directly from the command line using:</p>
+<pre><code>git init</code></pre>
+<p>Alternatively, you can create a repository directly on GitHub by navigating to your GitHub account and clicking on "New Repository."</p>
+
+<p><strong>2. Adding the README File:</strong><br>
+On GitHub, I added a README file via the web interface. This is a great way to provide an overview of your project.</p>
+
+<p><strong>3. Pushing Local Code to GitHub:</strong><br>
+Back on the command line, I added my code and pushed it to GitHub using:</p>
+<pre><code>git add .<br>
+git commit -m "Initial commit"<br>
+git remote add origin &lt;your-repo-url&gt;<br>
+git push -u origin main</code></pre>
+<p>However, I realized that I didn't pull the changes from GitHub before pushing my local commits.</p>
+
+<p><strong>4. Pulling from GitHub:</strong><br>
+When I performed a <code>git pull</code>, I encountered a merge conflict. The README file created on GitHub replaced my local code, resulting in a situation where it seemed all my code was lost.</p>
+
+<h3>The Solution: Recovering Overwritten Code</h3>
+
+<p><strong>1. Understand the Situation:</strong><br>
+When you pull changes from GitHub, Git attempts to merge the changes. If there are conflicts, it will try to merge the files, leading to potential overwrites.</p>
+
+<p><strong>2. Recovering Overwritten Code:</strong><br>
+First, identify the commit hash of your last local commit before the pull:</p>
+<pre><code>git log</code></pre>
+<p>Note the commit hash (e.g., <code>abc1234</code>).<br>
+Use the following command to reset your branch to the state before the pull:</p>
+<pre><code>git reset --hard abc1234</code></pre>
+<p>This command resets your working directory and index to the specified commit, effectively recovering your local changes.</p>
+
+<p><strong>3. Properly Merge Changes:</strong><br>
+To properly merge changes from GitHub, first ensure your local repository is up to date:</p>
+<pre><code>git fetch origin</code></pre>
+<p>Merge the remote changes without losing your local changes:</p>
+<pre><code>git merge origin/main</code></pre>
+<p>Resolve any merge conflicts manually, if necessary.</p>
+
+<p><strong>4. Push the Final Changes:</strong><br>
+After resolving conflicts and ensuring your local changes are intact, push your changes to GitHub:</p>
+<pre><code>git push origin main</code></pre>
+
+<h3>Key Takeaways</h3>
+
+<ul>
+<li>Always pull changes from GitHub before pushing your local commits to avoid conflicts.</li>
+<li>In case of overwritten code, use <code>git reset</code> to recover your local changes.</li>
+<li>Properly handle merge conflicts to ensure both local and remote changes are preserved.</li>
+</ul>
+
+<p>This experience reminded me of the importance of careful version control and the power of Git in managing and recovering code. Happy coding! 💻✨</p>
+
+<p>Feel free to share your thoughts or any similar experiences you've had. Let's learn and grow together! 🚀</p>
+
+<p>#GitHub #VersionControl #Git #SoftwareDevelopment #CodingTips #TechCommunity</p>
+        '''
+    },
+    
+    
+    {
+        "title": "Security Alert: Attack on Polyfill.io, BootCDN, BootCSS, and Staticfile Traced to a Single Operator",
+        "content": """
+        <p><strong>Introduction:</strong></p>
+        <p>In a concerning development in the cybersecurity world, a significant attack on popular services Polyfill.io, BootCDN, BootCSS, and Staticfile has been traced back to a single operator. This incident underscores the importance of vigilance and robust security measures in the management of web services and content delivery networks (CDNs).</p>
+        
+        <p><strong>The Incident:</strong></p>
+        <p>According to a detailed report by <a href="https://www.bleepingcomputer.com/news/security/polyfillio-bootcdn-bootcss-staticfile-attack-traced-to-1-operator/" target="_blank">BleepingComputer</a>, these widely-used services were targeted in a coordinated attack. The compromised services are integral to the functionality of countless websites, providing essential tools and libraries that enhance web development and user experience.</p>
+        
+        <p><strong>The Attack:</strong></p>
+        <p>The attack involved malicious code injection, allowing the attacker to manipulate the content delivered through these CDNs. This breach potentially exposed millions of users to malicious activities, including data theft and the spread of malware. The specific details of the attack reveal that the operator behind this incident leveraged sophisticated techniques to evade detection and maintain prolonged access to the compromised services.</p>
+        
+        <p><strong>Exposed Secrets:</strong></p>
+        <p>Adding to the severity of the incident, a .env file containing sensitive secrets was inadvertently pushed to a public GitHub repository. As reported by BleepingComputer, the exposed file included a Cloudflare API token, Cloudflare Zone ID for the Polyfill.io domain, and Algolia API keys, among other sensitive values. An earlier version of the file even had "production" MySQL credentials.</p>
+        
+        <p>The exposed Cloudflare API key allowed researchers, notably mdmck10, to query and obtain a list of active zones associated with the specific Cloudflare account. A Cloudflare "zone" is a way for website administrators to organize and manage domains in their Cloudflare account, including DNS settings and metadata.</p>
+        
+        <p><strong>Impact and Response:</strong></p>
+        <p>The repercussions of this attack are far-reaching, affecting not only the services themselves but also the numerous websites and applications that rely on them. Users of Polyfill.io, BootCDN, BootCSS, and Staticfile are urged to review their security protocols and ensure that their systems have not been compromised.</p>
+        
+        <p>In response to the breach, the operators of the affected services have implemented stringent security measures and are working closely with cybersecurity experts to mitigate the impact and prevent future incidents. This includes thorough code reviews, enhanced monitoring, and the deployment of additional protective measures to safeguard against similar attacks.</p>
+        
+        <p><strong>Lessons Learned:</strong></p>
+        <ul>
+            <li>Secure .env Files: Ensure .env files are excluded from version control systems like Git using .gitignore and are stored securely.</li>
+            <li>Regular Security Audits: Conduct frequent audits of your code and dependencies to identify and address vulnerabilities.</li>
+            <li>Monitor for Anomalies: Implement robust monitoring systems to detect unusual activities that may indicate a security breach.</li>
+            <li>Keep Software Updated: Ensure that all software and libraries are kept up to date with the latest security patches.</li>
+            <li>Educate Your Team: Provide ongoing cybersecurity training to your team to enhance their awareness and ability to respond to threats.</li>
+        </ul>
+        
+        <p><strong>Conclusion:</strong></p>
+        <p>The attack on Polyfill.io, BootCDN, BootCSS, and Staticfile, coupled with the exposure of sensitive secrets in a public GitHub repository, is a sobering reminder of the persistent threats faced by online services. By staying informed and proactive, we can collectively enhance our security posture and protect our digital assets from malicious actors.</p>
+        
+        <p>For a detailed account of the incident, you can read the full article on <a href="https://www.bleepingcomputer.com/news/security/polyfillio-bootcdn-bootcss-staticfile-attack-traced-to-1-operator/" target="_blank">BleepingComputer</a>.</p>
+        
+        <p><strong>Stay vigilant and secure your web services!</strong></p>
+        """
+    },
+    {
         'title': 'The Importance of Cloud Technology with the Addition of AI',
         'content': '''
             <p>The integration of Artificial Intelligence (AI) into cloud technology is transforming the landscape of IT and business operations. Cloud technology has already revolutionized the way organizations manage and deploy their applications, providing scalable, flexible, and cost-effective solutions. With the addition of AI, the cloud environment is set to become even more powerful and efficient.</p>
