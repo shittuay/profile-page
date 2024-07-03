@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
         NVDAPIKEY = credentials('NVDAPIKey')
-        SCANNER_HOME = tool 'sonar'
+        SCANNER_HOME = tool 'sonarqube'
         DOCKERHUB_USERNAME = 'shittuay'
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v.0.${env.BUILD_NUMBER}"
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonar-server') {
-                        sh "${SCANNER_HOME}/bin/sonar -Dsonar.projectKey=profile_page -Dsonar.projectName=profile_page"
+                        sh "${SCANNER_HOME}/bin/sonarqube -Dsonar.projectKey=profile_page -Dsonar.projectName=profile_page"
                     }
                 }
             }
