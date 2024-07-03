@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
-        NVDAPIKEY = credentials('nvdapikey')
+        NVDAPIKEY = credentials('NVDAPIKey')
         SCANNER_HOME = tool 'SonarQube' // Ensure this matches the tool name configured in Jenkins
         DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
         DEPLOYMENT_NAME = 'profile_page'
