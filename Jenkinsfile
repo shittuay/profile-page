@@ -94,7 +94,7 @@ pipeline {
                         sh "kubectl apply -f profile-page-deployment.yaml"
 
                         // Send notification to Slack
-                        slackSend channel: SLACK_CHANNEL, color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master", tokenCredentialId: SLACK_CREDENTIALS_ID
+                        slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "Profile_page with tag ${env.IMAGE_TAG} deployed to master", tokenCredentialId: env.SLACK_CREDENTIALS_ID
                     }
                 }
             }
@@ -108,12 +108,12 @@ pipeline {
         }
         success {
             script {
-                slackSend channel: SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'good', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
         failure {
             script {
-                slackSend channel: SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: SLACK_CREDENTIALS_ID
+                slackSend channel: env.SLACK_CHANNEL, color: 'danger', message: "${currentBuild.currentResult}: \nJOB_NAME: ${env.JOB_NAME} \nBUILD_NUMBER: ${env.BUILD_NUMBER} \nBRANCH_NAME: ${env.BRANCH_NAME}. \n More Info: ${env.BUILD_URL}", tokenCredentialId: env.SLACK_CREDENTIALS_ID
             }
         }
     }
