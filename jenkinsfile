@@ -5,7 +5,6 @@ pipeline {
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-token'
         DEPLOYMENT_NAME = 'profile_page'
         IMAGE_TAG = "v0.${env.BUILD_NUMBER}"
-        IMAGE_NAME = "${DOCKERHUB_USERNAME}/${DEPLOYMENT_NAME}:${IMAGE_TAG}"
         SLACK_CHANNEL = '#jenkins'
         SLACK_CREDENTIALS_ID = 'slack-token'
     }
@@ -41,9 +40,13 @@ pipeline {
             steps {
                 script {
                     kubeconfig(credentialsId: 'kubeconfig', serverUrl: '') {
-                        // Update and apply Kubernetes deployment YAML
-                        sh "sed -i 's|IMAGE_TAG|${env.IMAGE_TAG}|g' kubernetes/deployment.yaml"
-                        sh "kubectl apply -f kubernetes/deployment.yaml"
+                        // Update and apply Kubernetes deployment YAMLs
+                        sh "sed -i 's|IMAGE_TAG|${env.IMAGE_TAG}|g' k8s/master-profile-page-deployment.yaml"
+                        sh "kubectl apply -f k8s/master-profile-page-deployment.yaml"
+
+                        sh "sed -i 's|IMAGE_TAG|${env.IMAGE_TAG}|g' k8s/profile-page-deployment.yaml"
+                        sh "kubectl apply -f k8s/profile-page-deployment.yaml"
+                        
                         echo "Deployment applied to Kubernetes"
                     }
                 }
