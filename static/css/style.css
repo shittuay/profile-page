@@ -1,11 +1,11 @@
-* {
+/* * {
     box-sizing: border-box;
-}
+} */
 
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    /* margin: 0;
+    padding: 0; */
     background-color: #f4f4f4;
     color: #333;
 }
@@ -137,10 +137,67 @@ footer a {
     }
 
     .accomplishments, .tech-news, .blog-posts-section {
-        padding: 10px;
+        padding: 15px;
+        margin: 15px;
     }
 
     header, footer {
-        padding: 10px;
+        padding: 15px;
     }
+}
+
+@media (max-width: 600px) {
+    .accomplishments, .tech-news, .blog-posts-section {
+        padding: 20px;
+        margin: 20px;
+    }
+
+    header, footer {
+        padding: 20px;
+    }
+}
+
+/* Utility Classes */
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+}
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+        
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
 }

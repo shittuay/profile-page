@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from newsapi import NewsApiClient
+# from newsapi import NewsApiClient
 from dotenv import load_dotenv
 import os
 import logging
@@ -9,8 +9,12 @@ from requests.adapters import HTTPAdapter
 from urllib3.poolmanager import PoolManager
 from urllib3.exceptions import InsecureRequestWarning
 import warnings
+from xml.etree import ElementTree as ET
 
 from models import db, NewsArticle, BlogPost
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
 
 
 warnings.simplefilter('ignore', InsecureRequestWarning)
@@ -37,7 +41,7 @@ if not API_KEY:
 session = requests.Session()
 session.mount('https://', CustomHttpAdapter())
 
-newsapi = NewsApiClient(api_key=API_KEY, session=session)
+# newsapi = NewsApiClient(api_key=API_KEY, session=session)
 
 app = Flask(__name__)
 
@@ -635,29 +639,23 @@ def blog():
 @app.route("/tech_news")
 def tech_news():
     try:
-        response = requests.get(
-            'https://newsapi.org/v2/top-headlines',
-            params={'language': 'en', 'country': 'us', 'category': 'technology'},
-            headers={'Authorization': f'Bearer {API_KEY}'},
-            verify=False  # Disable SSL verification for testing purposes
-        )
-        response.raise_for_status()  # Raise HTTPError for bad responses
-        top_headlines = response.json()
-        articles = top_headlines.get('articles', [])
+        articles=[]
+        response = requests.get("https://www.techradar.com/rss")
+        rss_feed = response.content
         
-        # Save articles to the database
-        for article in articles:
-            if not NewsArticle.query.filter_by(url=article['url']).first():
-                new_article = NewsArticle(
-                    title=article['title'],
-                    description=article.get('description', ''),
-                    url=article['url']
-                )
-                db.session.add(new_article)
-        db.session.commit()
+        root = ET.fromstring(rss_feed)
+        items = root.findall(".//item")
         
-        # Fetch all articles from the database
-        articles = NewsArticle.query.all()
+        for item in items:
+            title = item.find('title').text
+            link = item.find('link').text
+            description = item.find('description').text
+            
+            articles.append({
+                'title': title,
+                'link': link,
+                'description': description
+            })
         
         return render_template('tech_news.html', articles=articles)
     except requests.exceptions.HTTPError as http_err:
