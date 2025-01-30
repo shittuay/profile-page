@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Knowledge Quiz</title>
+    <style>
+        .container { margin: 20px; }
+        .question { font-size: 1.5em; }
+        .options button { margin: 10px; padding: 10px 20px; }
+        .result { margin-top: 20px; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AWS Knowledge Quiz</h1>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function loadQuestion() {
+            fetch('/get_question')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('question').textContent = data.question;
+                    let optionsHtml = '';
+                    data.options.forEach(option => {
+                        optionsHtml += `<button onclick="checkAnswer('${option}', '${data.correct_answer}')">${option}</button>`;
+                    });
+                    document.getElementById('options').innerHTML = optionsHtml;
+                });
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                document.getElementById('result').textContent = 'Correct! Well done!';
+            } else {
+                document.getElementById('result').textContent = 'Incorrect. Try again!';
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

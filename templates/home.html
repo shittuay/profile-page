@@ -1,8 +1,110 @@
 {% extends "base.html" %}
+
 {% block title %}Home{% endblock %}
+
 {% block content %}
-<h1>Welcome to My Website</h1>
-<img src="{{ url_for('static', filename='images/Abiola.jpeg') }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
-<p>This is the landing page of Abiola Shittu's website.</p>
-<p>Explore my <a href="{{ url_for('profile') }}">Profile</a>, read my <a href="{{ url_for('blog') }}">Blog</a> posts, and stay updated with the latest <a href="{{ url_for('tech_news') }}">Tech News</a>.</p>
+    <h1>Welcome to My Website</h1>
+    <img src="{{ url_for('static', filename='images/Abiola.jpeg') }}" alt="Profile Picture" style="width:200px;height:200px;border-radius:50%;">
+    <p>This is the landing page of Abiola Shittu's website.</p>
+    <p>Explore my <a href="{{ url_for('profile') }}">Profile</a>, read my <a href="{{ url_for('blog') }}">Blog</a> posts, and stay updated with the latest <a href="{{ url_for('tech_news') }}">Tech News</a>.</p>
+
+    <h2>Test your AWS knowledge!</h2>
+    <form method="POST" action="{{ url_for('home') }}">
+        <div class="mb-3">
+            <label for="question1" class="form-label">Which AWS service is used for serverless computing?</label>
+            <select class="form-select" name="answer1" id="question1" required>
+                <option value="">Select an answer</option>
+                <option value="Lambda">Lambda</option>
+                <option value="EC2">EC2</option>
+                <option value="S3">S3</option>
+                <option value="RDS">RDS</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="question2" class="form-label">Which AWS service is used for object storage?</label>
+            <select class="form-select" name="answer2" id="question2" required>
+                <option value="">Select an answer</option>
+                <option value="S3">S3</option>
+                <option value="EC2">EC2</option>
+                <option value="Lambda">Lambda</option>
+                <option value="RDS">RDS</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="question3" class="form-label">Which AWS service allows you to manage databases?</label>
+            <select class="form-select" name="answer3" id="question3" required>
+                <option value="">Select an answer</option>
+                <option value="RDS">RDS</option>
+                <option value="EC2">EC2</option>
+                <option value="Lambda">Lambda</option>
+                <option value="S3">S3</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="question4" class="form-label">Which AWS service helps in content delivery?</label>
+            <select class="form-select" name="answer4" id="question4" required>
+                <option value="">Select an answer</option>
+                <option value="CloudFront">CloudFront</option>
+                <option value="S3">S3</option>
+                <option value="EC2">EC2</option>
+                <option value="RDS">RDS</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="question5" class="form-label">What is AWS Lambda used for?</label>
+            <select class="form-select" name="answer5" id="question5" required>
+                <option value="">Select an answer</option>
+                <option value="Serverless computing">Serverless computing</option>
+                <option value="Database management">Database management</option>
+                <option value="Object storage">Object storage</option>
+                <option value="Content delivery">Content delivery</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    {% if answer1 %}
+        <p>You selected for question 1: {{ answer1 }}</p>
+        {% if answer1 == 'Lambda' %}
+            <p>Correct! Lambda is AWS's serverless computing service.</p>
+        {% else %}
+            <p>Incorrect. The correct answer is Lambda.</p>
+        {% endif %}
+    {% endif %}
+    
+    {% if answer2 %}
+        <p>You selected for question 2: {{ answer2 }}</p>
+        {% if answer2 == 'S3' %}
+            <p>Correct! S3 is used for object storage.</p>
+        {% else %}
+            <p>Incorrect. The correct answer is S3.</p>
+        {% endif %}
+    {% endif %}
+    
+    {% if answer3 %}
+        <p>You selected for question 3: {{ answer3 }}</p>
+        {% if answer3 == 'RDS' %}
+            <p>Correct! RDS is used for managing databases.</p>
+        {% else %}
+            <p>Incorrect. The correct answer is RDS.</p>
+        {% endif %}
+    {% endif %}
+    
+    {% if answer4 %}
+        <p>You selected for question 4: {{ answer4 }}</p>
+        {% if answer4 == 'CloudFront' %}
+            <p>Correct! CloudFront helps in content delivery.</p>
+        {% else %}
+            <p>Incorrect. The correct answer is CloudFront.</p>
+        {% endif %}
+    {% endif %}
+    
+    {% if answer5 %}
+        <p>You selected for question 5: {{ answer5 }}</p>
+        {% if answer5 == 'Serverless computing' %}
+            <p>Correct! Lambda is used for serverless computing.</p>
+        {% else %}
+            <p>Incorrect. The correct answer is serverless computing.</p>
+        {% endif %}
+    {% endif %}
 {% endblock %}

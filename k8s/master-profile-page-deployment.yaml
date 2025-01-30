@@ -18,8 +18,8 @@ spec:
         operator: "Exists"
         effect: "NoSchedule"
       containers:
-      - name: master-profile-page
-        image: shittuay/profile_page:v.0.81 # Ensure this image name is correct
+      - name: master-profile-pagec
+        image: shittuay/profile_page:v.0.91 # Ensure this image name is correct
         ports:
         - containerPort: 80
         resources:

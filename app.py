@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask import request
+
 # from newsapi import NewsApiClient
 from dotenv import load_dotenv
 import os
@@ -15,6 +17,10 @@ from models import db, NewsArticle, BlogPost
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.ERROR)
+import requests
+
+response = requests.post('http://example.com', data={'key': 'value'})
+
 
 
 warnings.simplefilter('ignore', InsecureRequestWarning)
@@ -624,9 +630,14 @@ aws events put-targets --rule RotateAccessKeysRule --targets "Id"="1","Arn"="arn
     }
 ]
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
+    if request.method == "POST":
+        # Handle POST request
+        answer = request.form.get("answer")
+        return render_template('home.html', answer=answer)
     return render_template('home.html')
+
 
 @app.route("/profile")
 def profile():
@@ -667,5 +678,3 @@ def tech_news():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
-
-
